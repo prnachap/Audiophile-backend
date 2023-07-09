@@ -1,8 +1,9 @@
 import { createLogger, format, transports } from 'winston';
+import type winston from 'winston';
 
 const { combine, timestamp, printf, colorize, errors } = format;
 
-function devLogger(): any {
+function devLogger(): winston.Logger {
   const logFormat = printf((info) => `${info?.timestamp as string} ${info.level}: ${info.message as string}`);
 
   return createLogger({
