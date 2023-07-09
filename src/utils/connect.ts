@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import config from 'config';
-import logger from '../logger';
+import logger from '../../logger';
 
 mongoose.connection.once('open', () => {
   logger.info('connect is ready');

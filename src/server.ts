@@ -5,7 +5,7 @@ import http from 'http';
 import config from 'config';
 import app from './app';
 import logger from '../logger';
-import connect from '../utils/connect';
+import connect from './utils/connect';
 
 const PORT = config.get<number>('port');
 
