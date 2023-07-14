@@ -40,19 +40,10 @@ import('./utils/authPassportLocal');
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use((req, res, next) => {
-  console.log(req.session);
-  console.log(req.user);
-  next();
-});
 /**
  * Routes
  */
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/auth', authRouter);
-
-app.get('/home', (req, res, next) => {
-  res.status(200).json({ message: 'hello world' });
-});
 
 export default app;
