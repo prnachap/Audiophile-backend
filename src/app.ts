@@ -1,19 +1,26 @@
+import config from 'config';
+import MongoStore from 'connect-mongo';
 import express from 'express';
 import session from 'express-session';
-import config from 'config';
 import passport from 'passport';
-import { sessionStore } from './utils/sessionStore';
+import authRouter from './routes/auth.routes';
 import userRouter from './routes/user.routes';
 
-const app = express();
 const sessionSecret = config.get<string>('sessionSecret');
+const dbUri = config.get<string>('dbUri');
 
-// initialize passport-local
+// Express initialization
+const app = express();
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 /**
  * Session Setup
  */
+const sessionStore = MongoStore.create({
+  mongoUrl: dbUri,
+  dbName: 'Session',
+});
 app.use(
   session({
     secret: sessionSecret,
@@ -21,7 +28,7 @@ app.use(
     saveUninitialized: true,
     store: sessionStore,
     cookie: {
-      maxAge: 60000,
+      maxAge: 600000,
     },
   })
 );
@@ -29,14 +36,23 @@ app.use(
 /**
  * Passport Auth Setup
  */
-
 import('./utils/authPassportLocal');
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use((req, res, next) => {
+  console.log(req.session);
+  console.log(req.user);
+  next();
+});
 /**
  * Routes
  */
 app.use('/api/v1/user', userRouter);
+app.use('/api/v1/auth', authRouter);
+
+app.get('/home', (req, res, next) => {
+  res.status(200).json({ message: 'hello world' });
+});
 
 export default app;

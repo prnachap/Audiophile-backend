@@ -41,7 +41,8 @@ passport.serializeUser((user, done) => {
   done(null, (user as { id: string })?.id);
 });
 passport.deserializeUser((user, done) => {
-  UserModel.findById({ id: user })
+  const id = user;
+  UserModel.findById(id)
     .then((user) => {
       done(null, user);
     })
