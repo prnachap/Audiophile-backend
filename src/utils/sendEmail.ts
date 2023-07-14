@@ -4,7 +4,7 @@
 import nodemailer from 'nodemailer';
 import { google } from 'googleapis';
 import config from 'config';
-import logger from '../logger';
+import logger from '../../logger';
 import { type MailOptions } from 'nodemailer/lib/ses-transport';
 
 const clientSecret = config.get<string>('googleClientSecret');
