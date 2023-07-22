@@ -1,6 +1,6 @@
 import passport from 'passport';
-import { type IVerifyOptions, Strategy } from 'passport-local';
-import UserModel, { User } from '../model/user.model';
+import { Strategy, type IVerifyOptions } from 'passport-local';
+import UserModel from '../model/user.model';
 
 const customFields = {
   usernameField: 'email',
@@ -17,7 +17,6 @@ const verifyCallback = (
         cb(null, false);
         return;
       }
-
       user
         .validatePassword(password)
         .then((isValid) => {

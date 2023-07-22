@@ -1,12 +1,12 @@
 import { prop, getModelForClass, pre, type DocumentType, modelOptions, Severity } from '@typegoose/typegoose';
 import { v4 as uuidv4 } from 'uuid';
-import argon2 from 'argon2';
+import bcrypt from 'bcrypt';
 import logger from '../../logger';
 
 @pre<User>('save', async function () {
   if (!this.password) return;
   if (!this.isModified('password')) return;
-  const hash = await argon2.hash(this.password);
+  const hash = await bcrypt.hash(this.password, 10);
   this.password = hash;
 })
 @modelOptions({ schemaOptions: { timestamps: true }, options: { allowMixed: Severity.ALLOW } })
@@ -23,15 +23,21 @@ export class User {
   @prop({ required: true, default: () => uuidv4() })
   public verificationCode: string;
 
+  @prop()
+  public passwordTokenExpiry: Date;
+
+  @prop()
+  public verificiationTokenExpiry: Date;
+
   @prop({ default: false })
   public verified: boolean;
 
   @prop()
   public passwordResetCode: string | null;
 
-  async validatePassword(this: DocumentType<User>, candidatePassword: string): Promise<boolean> {
+  async validatePassword(this: DocumentType<User>, candidatePassword: string): Promise<boolean | undefined> {
     try {
-      return await argon2.verify(this.password as string, candidatePassword);
+      return await bcrypt.compare(candidatePassword, this.password as string);
     } catch (error) {
       logger.error(error, 'could not validate password');
       return false;
