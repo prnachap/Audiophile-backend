@@ -10,8 +10,8 @@ export const validateResource = (schema: AnyZodObject) => (req: Request, res: Re
       query: req.query,
     });
     next();
-  } catch (error) {
+  } catch (error: any) {
     logger.error(error);
-    res.sendStatus(400);
+    next(error);
   }
 };

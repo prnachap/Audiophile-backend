@@ -6,10 +6,11 @@
   "scripts": {
     "dev": "NODE_ENV=development ts-node-dev --respawn --transpile-only src/server.ts",
     "start": "NODE_ENV=production node build/src/server.js",
-    "lint": "eslint src/**/*.ts",
+    "check-lint": "eslint src/**/*.ts",
     "check-types": "tsc --pretty --noEmit",
     "check-format": "prettier --check .",
-    "format": "prettier --write .",
+    "fix-format": "prettier --write .",
+    "fix-lint": "eslint src/**/*.ts --fix",
     "prepare": "husky install"
   },
   "husky": {

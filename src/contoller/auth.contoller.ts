@@ -1,6 +1,7 @@
 import { type NextFunction, type Request, type Response } from 'express';
 import isEmpty from 'lodash/isEmpty';
 import { type AuthenticateUserInput } from '../schema/auth.schema';
+import ErrorResponse from '../utils/errorResponse';
 
 export const authenticateUserHandler = async (
   req: Request<unknown, unknown, AuthenticateUserInput>,
@@ -9,7 +10,8 @@ export const authenticateUserHandler = async (
 ) => {
   const authenticatedUser = req.user;
   if (isEmpty(authenticatedUser)) {
-    return res.status(401).json({ message: 'Invalid email or password' });
+    next(new ErrorResponse('Invalid email or password', 401));
+    return;
   }
   return res.status(200).json({ data: authenticatedUser });
 };
@@ -18,11 +20,11 @@ export const logoutUserHandler = (req: Request, res: Response, next: NextFunctio
   try {
     req.logOut({}, function (err) {
       if (err) {
-        res.status(500).json({ message: err.message });
+        next(err);
       }
     });
   } catch (error: any) {
-    res.status(500).json({ message: error?.message });
+    next(error);
   }
   res.status(200).json({ isAuthenticated: req.isAuthenticated() });
 };

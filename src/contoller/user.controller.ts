@@ -16,6 +16,7 @@ import {
 import { createUser } from '../services/user.service';
 import { getPasswordResetMail, getVerficationEmail } from '../utils/emailTemplates';
 import { sendEmail } from '../utils/sendEmail';
+import ErrorResponse from '../utils/errorResponse';
 
 const supportEmail = config.get<string>('userEmail');
 const clientURL = config.get<string>('clientRedirectUrl');
@@ -28,14 +29,15 @@ export const createUserHandler = async (
   const { email, name, password } = req.body;
   const user = await UserModel.findOne({ email });
   if (!isEmpty(user)) {
-    return res.status(400).json({ message: 'User already exists, please login' });
+    next(new ErrorResponse('User already exists, please login', 400));
+    return;
   }
   try {
     const newUser = await createUser({ email, name, password });
     return res.status(200).json({ data: newUser });
   } catch (error) {
     logger.error(error);
-    return res.status(500).json({ message: 'Something went wrong' });
+    next(error);
   }
 };
 
@@ -48,7 +50,8 @@ export const sendVerificationHandler = async (
   try {
     const user = await UserModel.findById(userId);
     if (isEmpty(user)) {
-      return res.status(400).json({ message: 'user not found' });
+      next(new ErrorResponse('user not found', 400));
+      return;
     }
     const token = uuidv4();
     user.verificationCode = token;
@@ -65,10 +68,10 @@ export const sendVerificationHandler = async (
       html: getVerficationEmail({ name: user.name, verificationURL }),
     });
 
-    res.status(200).json({ message: 'verification email sent' });
+    res.status(200).json({ data: 'verification email sent' });
   } catch (error: any) {
     logger.error(error);
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
@@ -83,21 +86,24 @@ export const userVerificationHandler = async (
     const currentDate = Date.now();
 
     if (isEmpty(user)) {
-      return res.status(200).json({ message: 'user not found' });
+      next(new ErrorResponse('user not found', 400));
+      return;
     }
     if (!isEqual(verificationId, user.verificationCode)) {
-      return res.status(200).json({ message: 'Invalid Token Id' });
+      next(new ErrorResponse('Invalid Token Id', 400));
+      return;
     }
 
     if (lte(user.verificiationTokenExpiry, currentDate)) {
-      return res.status(200).json({ message: 'Token has expired' });
+      next(new ErrorResponse('Token has expired', 200));
+      return;
     }
     user.verified = true;
     await user.save();
     res.status(200).redirect(clientURL);
   } catch (error: any) {
     logger.error(error);
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
@@ -111,10 +117,12 @@ export const forgotPasswordHandler = async (
   try {
     const user = await UserModel.findOne({ email });
     if (isEmpty(user)) {
-      return res.status(200).json({ message: 'email not registered' });
+      next(new ErrorResponse('email not registered', 400));
+      return;
     }
     if (!user.verified) {
-      return res.status(200).json({ meassge: 'user not verified' });
+      next(new ErrorResponse('user not verified', 400));
+      return;
     }
     const token = uuidv4();
     user.verificationCode = token;
@@ -126,10 +134,10 @@ export const forgotPasswordHandler = async (
       subject: 'Password Reset Token',
       html: getPasswordResetMail({ name: user.name, token }),
     });
-    res.status(200).json({ message });
+    res.status(200).json({ data: message });
   } catch (error: any) {
     logger.error(error);
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
 
@@ -144,18 +152,22 @@ export const resetPasswordHandler = async (
     const user = await UserModel.findOne({ email });
     const currentDate = Date.now();
     if (isEmpty(user)) {
-      return res.status(400).json({ message: 'Invalid user' });
+      next(new ErrorResponse('Invalid user', 400));
+      return;
     }
     if (!isEqual(user.verificationCode, token)) {
-      return res.status(200).json({ message: 'Invalid token' });
+      next(new ErrorResponse('Invalid token', 400));
+      return;
     }
     if (lte(user.passwordTokenExpiry, currentDate)) {
-      return res.status(200).json({ message: 'Token expired' });
+      next(new ErrorResponse('Token expired', 400));
+      return;
     }
     user.password = password;
     await user.save();
-    return res.status(200).json({ message: 'password changed' });
+    return res.status(200).json({ data: 'password changed' });
   } catch (error: any) {
-    res.status(500).json({ message: error?.message });
+    logger.error(error);
+    next(error);
   }
 };

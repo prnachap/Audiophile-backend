@@ -5,6 +5,7 @@ import session from 'express-session';
 import passport from 'passport';
 import authRouter from './routes/auth.routes';
 import userRouter from './routes/user.routes';
+import { errorHandler } from './middleware/error';
 
 const sessionSecret = config.get<string>('sessionSecret');
 const dbUri = config.get<string>('dbUri');
@@ -45,5 +46,6 @@ app.use(passport.session());
  */
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/auth', authRouter);
+app.use(errorHandler);
 
 export default app;
