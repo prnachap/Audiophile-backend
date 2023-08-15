@@ -2,6 +2,7 @@ import { type NextFunction, type Request, type Response } from 'express';
 import isEmpty from 'lodash/isEmpty';
 import { type AuthenticateUserInput } from '../schema/auth.schema';
 import ErrorResponse from '../utils/errorResponse';
+import { MESSAGES } from '../constants/messages';
 
 export const authenticateUserHandler = async (
   req: Request<unknown, unknown, AuthenticateUserInput>,
@@ -10,7 +11,7 @@ export const authenticateUserHandler = async (
 ) => {
   const authenticatedUser = req.user;
   if (isEmpty(authenticatedUser)) {
-    next(new ErrorResponse('Invalid email or password', 401));
+    next(new ErrorResponse(MESSAGES.INVALID_EMAIL_PASSWORD, 401));
     return;
   }
   return res.status(200).json({ data: authenticatedUser });

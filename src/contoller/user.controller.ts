@@ -1,8 +1,8 @@
 import config from 'config';
 import { type NextFunction, type Request, type Response } from 'express';
+import isEmpty from 'lodash/isEmpty';
 import isEqual from 'lodash/isEqual';
 import lte from 'lodash/lte';
-import isEmpty from 'lodash/isEmpty';
 import { v4 as uuidv4 } from 'uuid';
 import logger from '../../logger';
 import UserModel from '../model/user.model';
@@ -13,10 +13,11 @@ import {
   type UserVerificationInput,
   type sendVerificationInput,
 } from '../schema/user.schema';
-import { createUser } from '../services/user.service';
+import { createUser, findOneByEmail } from '../services/user.service';
 import { getPasswordResetMail, getVerficationEmail } from '../utils/emailTemplates';
-import { sendEmail } from '../utils/sendEmail';
 import ErrorResponse from '../utils/errorResponse';
+import { sendEmail } from '../utils/sendEmail';
+import { MESSAGES } from '../constants/messages';
 
 const supportEmail = config.get<string>('userEmail');
 const clientURL = config.get<string>('clientRedirectUrl');
@@ -27,9 +28,9 @@ export const createUserHandler = async (
   next: NextFunction
 ) => {
   const { email, name, password } = req.body;
-  const user = await UserModel.findOne({ email });
+  const user = await findOneByEmail(email);
   if (!isEmpty(user)) {
-    next(new ErrorResponse('User already exists, please login', 400));
+    next(new ErrorResponse(MESSAGES.USER_ALREADY_EXISTS, 400));
     return;
   }
   try {
@@ -50,7 +51,7 @@ export const sendVerificationHandler = async (
   try {
     const user = await UserModel.findById(userId);
     if (isEmpty(user)) {
-      next(new ErrorResponse('user not found', 400));
+      next(new ErrorResponse(MESSAGES.USER_NOT_FOUND, 400));
       return;
     }
     const token = uuidv4();
@@ -68,7 +69,7 @@ export const sendVerificationHandler = async (
       html: getVerficationEmail({ name: user.name, verificationURL }),
     });
 
-    res.status(200).json({ data: 'verification email sent' });
+    res.status(200).json({ data: MESSAGES.VERIFICATION_EMAIL_SENT });
   } catch (error: any) {
     logger.error(error);
     next(error);
@@ -86,16 +87,16 @@ export const userVerificationHandler = async (
     const currentDate = Date.now();
 
     if (isEmpty(user)) {
-      next(new ErrorResponse('user not found', 400));
+      next(new ErrorResponse(MESSAGES.USER_NOT_FOUND, 400));
       return;
     }
     if (!isEqual(verificationId, user.verificationCode)) {
-      next(new ErrorResponse('Invalid Token Id', 400));
+      next(new ErrorResponse(MESSAGES.INVALID_TOKEN, 400));
       return;
     }
 
     if (lte(user.verificiationTokenExpiry, currentDate)) {
-      next(new ErrorResponse('Token has expired', 200));
+      next(new ErrorResponse(MESSAGES.TOKEN_EXPIRED, 200));
       return;
     }
     user.verified = true;
@@ -117,11 +118,11 @@ export const forgotPasswordHandler = async (
   try {
     const user = await UserModel.findOne({ email });
     if (isEmpty(user)) {
-      next(new ErrorResponse('email not registered', 400));
+      next(new ErrorResponse(MESSAGES.EMAIL_NOT_REGISTERED, 400));
       return;
     }
     if (!user.verified) {
-      next(new ErrorResponse('user not verified', 400));
+      next(new ErrorResponse(MESSAGES.USER_NOT_VERIFIED, 400));
       return;
     }
     const token = uuidv4();
@@ -152,20 +153,20 @@ export const resetPasswordHandler = async (
     const user = await UserModel.findOne({ email });
     const currentDate = Date.now();
     if (isEmpty(user)) {
-      next(new ErrorResponse('Invalid user', 400));
+      next(new ErrorResponse(MESSAGES.INVALID_USER, 400));
       return;
     }
     if (!isEqual(user.verificationCode, token)) {
-      next(new ErrorResponse('Invalid token', 400));
+      next(new ErrorResponse(MESSAGES.INVALID_TOKEN, 400));
       return;
     }
     if (lte(user.passwordTokenExpiry, currentDate)) {
-      next(new ErrorResponse('Token expired', 400));
+      next(new ErrorResponse(MESSAGES.TOKEN_EXPIRED, 400));
       return;
     }
     user.password = password;
     await user.save();
-    return res.status(200).json({ data: 'password changed' });
+    return res.status(200).json({ data: MESSAGES.PASSWORD_CHANGED });
   } catch (error: any) {
     logger.error(error);
     next(error);

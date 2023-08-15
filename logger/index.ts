@@ -2,7 +2,7 @@ import prodLogger from './prod-logger';
 import devLogger from './dev-logger';
 import isEqual from 'lodash/isEqual';
 let logger: any;
-if (isEqual(process.env.NODE_ENV, 'development')) {
+if (isEqual(process.env.NODE_ENV, 'development' || 'test')) {
   logger = devLogger();
 } else {
   logger = prodLogger();

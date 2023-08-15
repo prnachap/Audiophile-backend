@@ -9,7 +9,7 @@ import connect from './utils/connect';
 
 const PORT = config.get<number>('port');
 
-const server = http.createServer(app);
+export const server = http.createServer(app);
 
 server.listen(PORT, () => {
   logger.info(`server started on port ${PORT}`);
