@@ -39,6 +39,7 @@ app.use(
  * Passport Auth Setup
  */
 import('./utils/authPassportLocal');
+import('./utils/authPassportGoogle');
 app.use(passport.initialize());
 app.use(passport.session());
 

@@ -3,7 +3,7 @@
 
 npm run check-format || 
 ( echo '🤢🤮🤢🤮 styling looks disgusting. 🤢🤮🤢🤮
-    Prettier Check Failed. Run npm run format, add changes and try commit again.';
+    Prettier Check Failed. Run npm run fix-format, add changes and try commit again.';
     false;
 )
 

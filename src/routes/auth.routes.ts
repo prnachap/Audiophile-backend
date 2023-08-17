@@ -1,13 +1,23 @@
 import config from 'config';
-import express from 'express';
+import express, { type Request, type Response } from 'express';
 import passport from 'passport';
 import { authenticateUserHandler, logoutUserHandler } from '../contoller/auth.contoller';
+import { protect } from '../middleware/protect';
 import { validateResource } from '../middleware/validateResource';
 import { authenticateUserSchema } from '../schema/auth.schema';
-import { protect } from '../middleware/protect';
 
 const authRouter = express.Router();
 const redirectUrl = config.get<string>('clientRedirectUrl');
+
+authRouter.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+authRouter.get(
+  '/google/callback',
+  passport.authenticate('google', { failureRedirect: `${redirectUrl}/login` }),
+  function (_req: Request, res: Response) {
+    res.redirect(redirectUrl);
+  }
+);
 
 authRouter.post(
   '/login',
