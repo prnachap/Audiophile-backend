@@ -1,10 +1,10 @@
 import supertest from 'supertest';
 import { server } from '../src/server';
-import { findOneByEmail, createUser } from '../src/services/user.service';
+import { findUser, createUser } from '../src/services/user.service';
 import { MESSAGES } from '../src/constants/messages';
 
 jest.mock('../src/services/user.service', () => ({
-  findOneByEmail: jest.fn(),
+  findUser: jest.fn(),
   createUser: jest.fn(),
 }));
 
@@ -35,7 +35,7 @@ describe('User Registration', () => {
   });
   test('Should handle existing user registration', async () => {
     // mock findOne response
-    (findOneByEmail as jest.Mock).mockReturnValue({
+    (findUser as jest.Mock).mockReturnValue({
       user: createUserPayload,
     });
 
@@ -47,7 +47,7 @@ describe('User Registration', () => {
     });
   });
   test('should register new user', async () => {
-    (findOneByEmail as jest.Mock).mockReturnValue({});
+    (findUser as jest.Mock).mockReturnValue({});
     (createUser as jest.Mock).mockReturnValue({
       ...userRegisteredResponse,
     });

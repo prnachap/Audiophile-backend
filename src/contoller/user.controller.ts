@@ -5,6 +5,7 @@ import isEqual from 'lodash/isEqual';
 import lte from 'lodash/lte';
 import { v4 as uuidv4 } from 'uuid';
 import logger from '../../logger';
+import { MESSAGES } from '../constants/messages';
 import UserModel from '../model/user.model';
 import {
   type CreateUserInput,
@@ -13,11 +14,10 @@ import {
   type UserVerificationInput,
   type sendVerificationInput,
 } from '../schema/user.schema';
-import { createUser, findOneByEmail } from '../services/user.service';
+import { createUser, findUser } from '../services/user.service';
 import { getPasswordResetMail, getVerficationEmail } from '../utils/emailTemplates';
 import ErrorResponse from '../utils/errorResponse';
 import { sendEmail } from '../utils/sendEmail';
-import { MESSAGES } from '../constants/messages';
 
 const supportEmail = config.get<string>('userEmail');
 const clientURL = config.get<string>('clientRedirectUrl');
@@ -28,7 +28,7 @@ export const createUserHandler = async (
   next: NextFunction
 ) => {
   const { email, name, password } = req.body;
-  const user = await findOneByEmail(email);
+  const user = await findUser({ email });
   if (!isEmpty(user)) {
     next(new ErrorResponse(MESSAGES.USER_ALREADY_EXISTS, 400));
     return;
