@@ -3,10 +3,11 @@ import MongoStore from 'connect-mongo';
 import express from 'express';
 import session from 'express-session';
 import passport from 'passport';
-import authRouter from './routes/auth.routes';
-import userRouter from './routes/user.routes';
 import { errorHandler } from './middleware/error';
 import morganMiddleware from './middleware/morganMiddleware';
+import authRouter from './routes/auth.routes';
+import productRouter from './routes/product.route';
+import userRouter from './routes/user.routes';
 
 const sessionSecret = config.get<string>('sessionSecret');
 const dbUri = config.get<string>('dbUri');
@@ -49,6 +50,8 @@ app.use(passport.session());
 app.use(morganMiddleware);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/product', productRouter);
+
 app.use(errorHandler);
 
 export default app;

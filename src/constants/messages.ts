@@ -9,4 +9,6 @@ export const MESSAGES = {
   INVALID_USER: 'Invalid user',
   PASSWORD_CHANGED: 'Password changed',
   INVALID_EMAIL_PASSWORD: 'Invalid email or password',
+  INVALID_IMAGE_FILE: 'Only image files are allowed',
+  SERVER_ERROR: 'Something went wrong',
 };
