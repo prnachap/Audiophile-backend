@@ -11,4 +11,8 @@ export const MESSAGES = {
   INVALID_EMAIL_PASSWORD: 'Invalid email or password',
   INVALID_IMAGE_FILE: 'Only image files are allowed',
   SERVER_ERROR: 'Something went wrong',
+  INVALID_DESTINATION: 'Invalid destination',
+  PRODUCT_DELETED: 'Product successfully deleted',
+  PRODUCT_DOESNOT_EXISTS: "Product doesn't exists",
+  PRODUCT_EXISTS: 'Product already exists',
 };

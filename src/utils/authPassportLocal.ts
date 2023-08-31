@@ -1,6 +1,7 @@
 import passport from 'passport';
 import { Strategy, type IVerifyOptions } from 'passport-local';
 import UserModel from '../model/user.model';
+import { findUser } from '../services/user.service';
 
 const customFields = {
   usernameField: 'email',
@@ -11,7 +12,7 @@ const verifyCallback = (
   password: string,
   cb: (error: any, user?: Express.User | false, options?: IVerifyOptions) => void
 ): any => {
-  UserModel.findOne({ email: username })
+  findUser({ email: username })
     .then((user) => {
       if (!user) {
         cb(null, false);
