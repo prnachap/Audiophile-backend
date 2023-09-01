@@ -1,5 +1,45 @@
 import { object, string, type TypeOf, z } from 'zod';
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     ProductSchema:
+ *       type: object
+ *       required:
+ *         - name
+ *         - price
+ *         - category
+ *         - description
+ *         - feature
+ *       properties:
+ *         name:
+ *           type: string
+ *           default: XX99 MARK III
+ *         price:
+ *           type: number
+ *           default: 2000
+ *         category:
+ *           type: string
+ *           default: headphones
+ *         description:
+ *           type: string
+ *         feature:
+ *           type: string
+ *         boxContent:
+ *           type: array
+ *           nullable: true
+ *           items:
+ *             type: object
+ *             properties:
+ *               quantity:
+ *                 type: number
+ *                 default: 1
+ *               name:
+ *                 type: string
+ *                 default: charger
+ */
+
 export const createProductSchema = object({
   body: object({
     name: string({ required_error: 'Name is mandatory' }).min(3, 'Product name must be at least 4 characters long.'),

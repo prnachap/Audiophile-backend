@@ -1,6 +1,38 @@
 import isEqual from 'lodash/isEqual';
 import { object, string, type TypeOf } from 'zod';
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     UserSchema:
+ *       type: object
+ *       required:
+ *         - name
+ *         - email
+ *         - password
+ *         - confirmPassword
+ *       properties:
+ *         name:
+ *           type: string
+ *           default: john doe
+ *         email:
+ *           type: number
+ *           default: johndoe@example.com
+ *         password:
+ *           type: string
+ *           default: strongpassword123
+ *         confirmPassword:
+ *           type: string
+ *           default: strongpassword123
+ *         verificationCode:
+ *           type: string
+ *           default: 123
+ *         verified:
+ *           type: boolean
+ *           default: false
+ */
+
 export const createUserSchema = object({
   body: object({
     name: string({ required_error: 'Name is required' }).min(3, 'Name is too short - should be at least 3 characters'),
