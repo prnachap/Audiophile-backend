@@ -77,7 +77,7 @@ userRouter.post('/register', validateResource(createUserSchema), createUserHandl
  *   post:
  *     tags:
  *       - User
- *     summary: Forgot Password
+ *     summary: Send Forgot Password Link
  *     requestBody:
  *       required: true
  *       content:
@@ -109,7 +109,72 @@ userRouter.post('/register', validateResource(createUserSchema), createUserHandl
 
 userRouter.post('/forgot-password', validateResource(forgotPasswordSchema), forgotPasswordHandler);
 
+/**
+ * @openapi
+ * '/api/v1/users/send-verification':
+ *  post:
+ *    tags:
+ *      - User
+ *    summary: Send verification Email
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *           schema:
+ *            type: object
+ *            required:
+ *              - userId
+ *            properties:
+ *              userId:
+ *                type: string
+ *                default: 123
+ *
+ *    responses:
+ *      200:
+ *        description: success
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                data:
+ *                  type: string
+ *                  default: verfication email sent
+ *      400:
+ *        description: Bad Request
+ *      500:
+ *        description: Server Error
+ */
 userRouter.post('/send-verification', protect, validateResource(sendVerificationSchema), sendVerificationHandler);
+
+/**
+ * @openapi
+ * '/api/v1/product/{verificationId}/{userId}':
+ *   get:
+ *     tags:
+ *       - User
+ *     summary: Verify User Email
+ *     parameters:
+ *       - in: path
+ *         name: verificationId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: VerificationId of the User
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: UserId of the User
+ *     responses:
+ *       200:
+ *         description: Success
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Server Error
+ */
 
 userRouter.get(
   '/verify-user/:verificationId/:userId',
@@ -118,6 +183,50 @@ userRouter.get(
   userVerificationHandler
 );
 
+/**
+ * @openapi
+ * '/api/v1/users/reset-password':
+ *  post:
+ *    tags:
+ *      - User
+ *    summary: Reset Password
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *           schema:
+ *            type: object
+ *            required:
+ *              - email
+ *              - password
+ *              - token
+ *            properties:
+ *              email:
+ *                type: string
+ *                default: johndoe@example.com
+ *              password:
+ *                type: string
+ *                default: strongpassword
+ *              token:
+ *                type: string
+ *                default: 82727636uy
+ *
+ *    responses:
+ *      200:
+ *        description: success
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                data:
+ *                  type: string
+ *                  default: password changed
+ *      400:
+ *        description: Bad Request
+ *      500:
+ *        description: Server Error
+ */
 userRouter.post('/reset-password', validateResource(resetPasswordSchema), resetPasswordHandler);
 
 export default userRouter;
