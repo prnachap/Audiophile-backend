@@ -15,4 +15,5 @@ export const MESSAGES = {
   PRODUCT_DELETED: 'Product successfully deleted',
   PRODUCT_DOESNOT_EXISTS: "Product doesn't exists",
   PRODUCT_EXISTS: 'Product already exists',
+  NOT_AUTHORIZED: 'NOT_AUTHORIZED',
 };

@@ -12,7 +12,6 @@ export const errorHandler: ErrorRequestHandler = (err: any, req: Request, res: R
     const castErrorPath = (err as { path: string })?.path;
     error = new ErrorResponse(`${castErrorPath} is invalid`, 400);
   }
-
   // yup errors
   if (!isEmpty(err?.errors)) {
     const errorMessage = err?.errors?.map((error: any) => error?.message)?.join(',');

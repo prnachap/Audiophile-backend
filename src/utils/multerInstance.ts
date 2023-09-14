@@ -29,20 +29,6 @@ const storage = multer.diskStorage({
     const fileName = `${req?.body?.name}-${req?.body?.description}`;
     const fileExtension = path.extname(file.originalname);
     const updatedFileName = `${fileName}${fileExtension}`;
-    // const filePath = path.join(__dirname, '..', '..', 'uploads', req.body.category, updatedFileName);
-
-    // const isFileExists = fs.existsSync(filePath);
-    // if (isFileExists) {
-    //   fs.unlink(filePath, (error) => {
-    //     if (error) {
-    //       logger.error(error.message);
-    //       cb(error, updatedFileName);
-    //       // eslint-disable-next-line no-useless-return
-    //       return;
-    //     }
-    //   });
-    // }
-
     cb(null, updatedFileName);
   },
 });

@@ -1,5 +1,6 @@
-import { prop, getModelForClass, modelOptions } from '@typegoose/typegoose';
+import { Ref, getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
 import mongoose from 'mongoose';
+import { User } from './user.model';
 
 export enum Category {
   Earphones = 'earphones',
@@ -32,6 +33,9 @@ export class Product {
 
   @prop()
   public imagePath: string;
+
+  @prop({ ref: () => User, required: true })
+  public createdBy: Ref<User>;
 }
 
 const ProductModel = getModelForClass(Product);

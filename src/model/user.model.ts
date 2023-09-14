@@ -1,7 +1,8 @@
-import { prop, getModelForClass, pre, type DocumentType, modelOptions, Severity } from '@typegoose/typegoose';
+import { prop, getModelForClass, pre, type DocumentType, modelOptions, Severity, type Ref } from '@typegoose/typegoose';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 import logger from '../../logger';
+import { Product } from './product.model';
 
 @pre<User>('save', async function () {
   if (!this.password) return;
@@ -34,6 +35,12 @@ export class User {
 
   @prop()
   public passwordResetCode: string | null;
+
+  @prop({ default: 'buyer' })
+  public userRole: string;
+
+  @prop({ ref: () => Product })
+  public products: Array<Ref<Product>>;
 
   async validatePassword(this: DocumentType<User>, candidatePassword: string): Promise<boolean | undefined> {
     try {
